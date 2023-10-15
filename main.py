@@ -21,6 +21,7 @@ camera.parent=camera_pivot
 camera.position=(0,.5,-30)
 camera_pivot.rotation_y=-30
 camera_pivot.rotation_x=20
+
 def update():
     if held_keys['w']:
         poke.rotation_y=lerp(poke.rotation_y,0,time.dt*10)
@@ -37,11 +38,14 @@ def update():
     elif poke.x>=22.9091:
         poke.x-=time.dt
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
-def input(key):
-    if key=='q':
-        print(poke.position)
 
 pivot = Entity()
-DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
+light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
+def input(key):
+    if key=='q':
+        light.disable()
+        reload_scene()
+    if key=='e':
+        light.enable()
 
 app.run()
