@@ -43,7 +43,6 @@ light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 4
 def input(key):
     if key=='q':
         light.disable()
-        reload_scene()
     if key=='e':
         light.enable()
 
