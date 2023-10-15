@@ -13,7 +13,7 @@ for z in range(10):
 
 filter.setCartoonInk()
 filter.setMSAA(32)
-filter.setBloom(intensity=.1)
+filter.setBloom(intensity=.2)
 
 camera_pivot=Entity()
 camera.parent=camera_pivot
