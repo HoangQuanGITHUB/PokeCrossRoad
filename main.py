@@ -19,7 +19,7 @@ filter.setBloom(intensity=.1)
 camera_pivot=Entity()
 camera.parent=camera_pivot
 camera.position=(0,.5,-30)
-camera_pivot.rotation_y=-30
+camera_pivot.rotation_y=-30 
 camera_pivot.rotation_x=20
 
 def update():
