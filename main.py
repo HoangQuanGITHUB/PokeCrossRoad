@@ -8,7 +8,6 @@ Audio('theme.mp3',loop=True)
 poke=Entity(model='poke',shader=lit_with_shadows_shader,y=1.2)
 for z in range(10):
     Entity(model='road',shader=lit_with_shadows_shader,z=z*25)
-
 filter.setCartoonInk()
 filter.setMSAA(32)
 filter.setBloom(intensity=.2)
