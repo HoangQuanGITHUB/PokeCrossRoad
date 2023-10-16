@@ -6,11 +6,14 @@ app = Ursina(development_mode=False,show_ursina_splash=True)
 Audio('theme.mp3',loop=True)
 
 filter=CommonFilters(app.win,app.cam)
-poke=Entity(model='poke',shader=lit_with_shadows_shader,y=1.2)
-for z in range(10):
-    Entity(model='road',shader=lit_with_shadows_shader,z=z*25)
+poke=Entity(model='poke',shader=lit_with_shadows_shader,y=1.2,z=-10)
+start_point=poke.position
+road=Entity(shader=lit_with_shadows_shader)
+for z in range(3):
+    Entity(model='road',shader=lit_with_shadows_shader,z=z*25,parent=road,color=color.white)
+road.combine()
 
-Sky(texture='sky',texture_scale=(100,100))
+Sky(texture='sky_sunset')
 filter.setCartoonInk()
 filter.setMSAA(32)
 filter.setBloom(intensity=.2)
@@ -36,16 +39,10 @@ def update():
         poke.x+=time.dt
     elif poke.x>=22.9091:
         poke.x-=time.dt
+    road.z=floor((poke.z-start_point.z)/29)*25
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
 
 pivot = Entity()
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
-def input(key):
-    if key=='q':
-        light.shadows=False
-        Entity.default_shader=unlit_shader
-    if key=='e':
-        light.shadows=True
-        Entity.default_shader=lit_with_shadows_shader
 
 app.run()
