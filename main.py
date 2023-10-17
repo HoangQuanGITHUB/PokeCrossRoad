@@ -1,21 +1,22 @@
 from ursina import *
-from ursina.shaders import lit_with_shadows_shader, unlit_shader
+from ursina.shaders import *
 from direct.filter.CommonFilters import CommonFilters
 
-app = Ursina(development_mode=False,show_ursina_splash=True)
+app = Ursina(development_mode=False ,show_ursina_splash=True)
 Audio('theme.mp3',loop=True)
 
+shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
-poke=Entity(model='poke',shader=lit_with_shadows_shader,y=1.2,z=-10)
+poke=Entity(model='poke',shader=shader,y=1.2,z=-10)
 start_point=poke.position
-road=Entity(shader=lit_with_shadows_shader)
+road=Entity(shader=shader)
 for z in range(3):
-    Entity(model='road',shader=lit_with_shadows_shader,z=z*25,parent=road,color=color.white)
+    Entity(model='road',shader=shader,z=z*25,parent=road,color=color.white)
 road.combine()
 
 Sky(texture='sky_sunset')
 filter.setCartoonInk()
-filter.setMSAA(32)
+filter.setMSAA(16)
 filter.setBloom(intensity=.2)
 
 camera_pivot=Entity()
@@ -41,6 +42,18 @@ def update():
         poke.x-=time.dt
     road.z=floor((poke.z-start_point.z)/29)*25
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
+Draggable
+class Setting(Entity):
+    def __init__(self, **kwargs):
+        super().__init__(model='quad',radius=.1,**kwargs)
+
+def openSetting():
+    global settings
+    settings=Setting()
+
+def input(key):
+    if key=='q':
+        openSetting()
 
 pivot = Entity()
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
