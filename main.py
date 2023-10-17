@@ -46,7 +46,7 @@ Draggable
 class Setting(Entity):
     def __init__(self, **kwargs):
         super().__init__(model='quad',radius=.1,**kwargs)
-
+settings=None
 def openSetting():
     global settings
     settings=Setting()
