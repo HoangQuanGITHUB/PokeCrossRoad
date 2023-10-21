@@ -27,24 +27,28 @@ camera_pivot.rotation_y=-30
 camera_pivot.rotation_x=20
 moving=False
 
+def lerp_angle(start_angle, end_angle, t):
+    start_angle = start_angle % 360
+    end_angle = end_angle % 360
+    angle_diff = (end_angle - start_angle + 180) % 360 - 180
+    result_angle = start_angle + t * angle_diff
+    result_angle = (result_angle + 360) % 360
+    return result_angle
+
 def update():
     global moving
     moving=False
     if held_keys['w'] and not moving:
-        poker.rotation_y=0
-        poke.rotation_y=slerp(poke.quaternion,poker.quaternion,time.dt*10)
+        poke.rotation_y=lerp_angle(poke.rotation_y,0,time.dt*10)
         moving=True
     if held_keys['s'] and not moving:
-        poker.rotation_y=180
-        poke.rotation_y=slerp(poke.quaternion,poker.quaternion,time.dt*10)
+        poke.rotation_y=lerp_angle(poke.rotation_y,180,time.dt*10)
         moving=True
     if held_keys['a'] and not moving:
-        poker.rotation_y=-90
-        poke.rotation_y=slerp(poke.quaternion,poker.quaternion,time.dt*10)
+        poke.rotation_y=lerp_angle(poke.rotation_y,-90,time.dt*10)
         moving=True
     if held_keys['d'] and not moving:
-        poker.rotation_y=90
-        poke.rotation_y=slerp(poke.quaternion,poker.quaternion,time.dt*10)
+        poke.rotation_y=lerp_angle(poke.rotation_y,90,time.dt*10)
         moving=True
     if moving and (poke.x > -15.3379 and poke.x < 22.9091):
         poke.position+=poke.forward*time.dt*5
@@ -54,7 +58,6 @@ def update():
         poke.x-=time.dt
     road.z=floor((poke.z-start_point.z)/29)*25
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
-Draggable
 class Setting(Entity):
     def __init__(self, **kwargs):
         super().__init__(model='quad',radius=.1,**kwargs)
