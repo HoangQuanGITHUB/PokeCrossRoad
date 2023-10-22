@@ -17,7 +17,7 @@ for z in range(3):
 road.combine()
 
 Sky(texture='sky_sunset')
-filter.setCartoonInk()
+filter.setCartoonInk(2)
 filter.setBloom(intensity=.2)
 
 camera_pivot=Entity()
@@ -38,16 +38,16 @@ def lerp_angle(start_angle, end_angle, t):
 def update():
     global moving, current_level
     moving=False
-    if held_keys['w'] and not moving:
+    if held_keys['w'] and not moving and not stop:
         poke.rotation_y=lerp_angle(poke.rotation_y,0,time.dt*10)
         moving=True
-    if held_keys['s'] and not moving:
+    if held_keys['s'] and not moving and not stop:
         poke.rotation_y=lerp_angle(poke.rotation_y,180,time.dt*10)
         moving=True
-    if held_keys['a'] and not moving:
+    if held_keys['a'] and not moving and not stop:
         poke.rotation_y=lerp_angle(poke.rotation_y,-90,time.dt*10)
         moving=True
-    if held_keys['d'] and not moving:
+    if held_keys['d'] and not moving and not stop:
         poke.rotation_y=lerp_angle(poke.rotation_y,90,time.dt*10)
         moving=True
     if moving and (poke.x > -15.3379 and poke.x < 22.9091):
@@ -66,21 +66,25 @@ class Setting(Entity):
         self.color=color.rgb(94,94,94)
         self.MSAAsetting=Slider(text='MSAA',min=0,max=32,step=1,parent=self,scale=(1,2),x=-.4,y=.4)
         self.MSAAsetting.on_value_changed=self.changeMSAA
+        self.bloomsetting=Slider(text='Bloom',min=0,max=1,parent=self,scale=(1,2),x=-.4,y=.2,dynamic=True)
+        self.bloomsetting.on_value_changed=self.changebloom
     def changeMSAA(self):
         filter.delMSAA()
         filter.setMSAA(self.MSAAsetting.value)
+    def changebloom(self):
+        filter.delBloom()
+        filter.setBloom(intensity=self.bloomsetting.value)
 settings=Setting()
 settings.disable()
-application.time_scale=1
+stop=False
 def toggleSetting():
-    global settings
+    global settings, stop
     if settings.enabled:
         settings.disable()
-        application.time_scale=1
+        stop=False
     else:
         settings.enable()
-        application.time_scale=0
-
+        stop=True
 def input(key):
     if key=='q':
         toggleSetting()
