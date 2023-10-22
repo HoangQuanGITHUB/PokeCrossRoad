@@ -18,7 +18,6 @@ road.combine()
 
 Sky(texture='sky_sunset')
 filter.setCartoonInk()
-filter.setMSAA(16)
 filter.setBloom(intensity=.2)
 
 camera_pivot=Entity()
@@ -62,15 +61,29 @@ def update():
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
 class Setting(Entity):
     def __init__(self, **kwargs):
-        super().__init__(model='quad',radius=.1,**kwargs)
-settings=None
-def openSetting():
+        super().__init__(model='quad',parent=camera.ui,**kwargs)
+        self.scale=(1,.5)
+        self.color=color.rgb(94,94,94)
+        self.MSAAsetting=Slider(text='MSAA',min=0,max=32,step=1,parent=self,scale=(1,2),x=-.4,y=.4)
+        self.MSAAsetting.on_value_changed=self.changeMSAA
+    def changeMSAA(self):
+        filter.delMSAA()
+        filter.setMSAA(self.MSAAsetting.value)
+settings=Setting()
+settings.disable()
+application.time_scale=1
+def toggleSetting():
     global settings
-    settings=Setting()
+    if settings.enabled:
+        settings.disable()
+        application.time_scale=1
+    else:
+        settings.enable()
+        application.time_scale=0
 
 def input(key):
     if key=='q':
-        openSetting()
+        toggleSetting()
 
 pivot = Entity()
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
