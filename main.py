@@ -18,7 +18,6 @@ road.combine()
 
 Sky(texture='sky_sunset')
 filter.setCartoonInk(2)
-filter.setBloom(intensity=.2)
 
 camera_pivot=Entity()
 camera.parent=camera_pivot
@@ -68,12 +67,27 @@ class Setting(Entity):
         self.MSAAsetting.on_value_changed=self.changeMSAA
         self.bloomsetting=Slider(text='Bloom',min=0,max=1,parent=self,scale=(1,2),x=-.4,y=.2,dynamic=True)
         self.bloomsetting.on_value_changed=self.changebloom
+        self.togglelight=Slider(text='Lights',min=0,max=1,step=1,parent=self,scale=(1,2),x=-.4,y=0)
+        self.togglelight.on_value_changed=self.toggleLight
     def changeMSAA(self):
         filter.delMSAA()
         filter.setMSAA(self.MSAAsetting.value)
     def changebloom(self):
         filter.delBloom()
         filter.setBloom(intensity=self.bloomsetting.value)
+    def toggleLight(self):
+        global light
+        if self.togglelight.value>0:
+            self.togglelight.knob.text_entity.text='On'
+            render.setLight(light._light_np)
+        else:
+            self.togglelight.knob.text_entity.text='Off'
+            render.clearLight(light._light_np)
+    def update(self):
+        if self.togglelight.value>0:
+            self.togglelight.knob.text_entity.text='On'
+        else:
+            self.togglelight.knob.text_entity.text='Off'
 settings=Setting()
 settings.disable()
 stop=False
@@ -89,8 +103,9 @@ def input(key):
     if key=='q':
         toggleSetting()
 
-pivot = Entity()
+pivot=Entity()
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
 light.shadow_map_resolution = (1024,1024)
+light_np=light.attachNewNode(light._light)
 
 app.run()
