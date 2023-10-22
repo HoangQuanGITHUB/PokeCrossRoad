@@ -69,12 +69,17 @@ class Setting(Entity):
         self.bloomsetting.on_value_changed=self.changebloom
         self.togglelight=Slider(text='Lights',min=0,max=1,step=1,parent=self,scale=(1,2),x=-.4,y=0)
         self.togglelight.on_value_changed=self.toggleLight
+        self.changebright=Slider(text='Brightness',min=0,max=255,parent=self,scale=(1,2),x=-.4,y=-.2,dynamic=True)
+        self.changebright.on_value_changed=self.changeBright
     def changeMSAA(self):
         filter.delMSAA()
         filter.setMSAA(self.MSAAsetting.value)
     def changebloom(self):
         filter.delBloom()
         filter.setBloom(intensity=self.bloomsetting.value)
+    def changeBright(self):
+        #AmbientLight(color = color.rgba(225, 225, 225, 1))
+        pass
     def toggleLight(self):
         global light
         if self.togglelight.value>0:
@@ -106,6 +111,5 @@ def input(key):
 pivot=Entity()
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
 light.shadow_map_resolution = (1024,1024)
-light_np=light.attachNewNode(light._light)
 
 app.run()
