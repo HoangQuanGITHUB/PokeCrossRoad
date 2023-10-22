@@ -11,6 +11,7 @@ poke=Entity(model='poke',shader=shader,y=1.2,z=-10)
 poker=Entity(parent=poke)
 start_point=poke.position
 road=Entity(shader=shader)
+current_level=0
 for z in range(3):
     Entity(model='road',shader=shader,z=z*25,parent=road,color=color.white)
 road.combine()
@@ -36,7 +37,7 @@ def lerp_angle(start_angle, end_angle, t):
     return result_angle
 
 def update():
-    global moving
+    global moving, current_level
     moving=False
     if held_keys['w'] and not moving:
         poke.rotation_y=lerp_angle(poke.rotation_y,0,time.dt*10)
@@ -57,6 +58,7 @@ def update():
     elif poke.x>=22.9091:
         poke.x-=time.dt
     road.z=floor((poke.z-start_point.z)/29)*25
+    current_level=floor((poke.z-start_point.z)/29)
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
 class Setting(Entity):
     def __init__(self, **kwargs):
