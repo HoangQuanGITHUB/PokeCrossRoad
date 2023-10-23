@@ -2,10 +2,19 @@ from ursina import *
 from ursina.shaders import *
 from direct.filter.CommonFilters import CommonFilters
 from random import randint
+from UrsinaAchievements import *
 
 app = Ursina(development_mode=False ,show_ursina_splash=True)
 Audio('theme.mp3',loop=True)
-
+do = False
+def cond():
+    global do
+    return do
+create_achievement(name = 'Welcome!', condition = cond, icon = 'confetti', sound = 'sudden', duration = 1.5,description="Welcome to the game!")
+def setdo():
+    global do
+    do = True
+invoke(setdo, delay = 3)
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
 poke=Entity(model='poke',shader=shader,y=1.2,z=-10,collider='box')
@@ -49,7 +58,7 @@ def update():
         poke.rotation_y=lerp_angle(poke.rotation_y,90,time.dt*10)
         moving=True
     if moving and (poke.x > -15.3379 and poke.x < 22.9091):
-        poke.position+=poke.forward*time.dt*5
+        poke.position+=poke.forward*time.dt*6
     elif poke.x<=-15.3379:
         poke.x+=time.dt
     elif poke.x>=22.9091:
@@ -59,8 +68,9 @@ def update():
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
 
 class Car(Entity):
-    def __init__(self, add_to_scene_entities=True, **kwargs):
+    def __init__(self, level=0,add_to_scene_entities=True, **kwargs):
         super().__init__(add_to_scene_entities, model='Camaro',scale=2,y=.5,shader=lit_with_shadows_shader,**kwargs)
+        self.level=level
         self.choice=randint(0,1)
         self.collider='box'
         if self.choice>0:
@@ -77,9 +87,10 @@ class Car(Entity):
         self.position+=self.forward*self.speed*time.dt
         if self.x < -30 or self.x > 30:
             destroy(self)
+        if self.level!=current_level:
+            destroy(self)
         if self.intersects(poke):
             exit()
-
 class Setting(Entity):
     def __init__(self, **kwargs):
         super().__init__(model='quad',parent=camera.ui,**kwargs)
@@ -118,10 +129,13 @@ class Setting(Entity):
 class TaskManager(Entity):
     def __init__(self, add_to_scene_entities=True, **kwargs):
         super().__init__(add_to_scene_entities, **kwargs)
+    def update(self):
+        score.text=f'{current_level}'
     @every((current_level+1)*1)
     def onesec(self):
-        exec('Car()')
+        exec(f'Car({current_level})')
 TaskManager()
+score=Text(text=f'{current_level}',y=.5,scale=3)
 settings=Setting()
 settings.disable()
 stop=False
