@@ -5,7 +5,7 @@ from random import randint
 from UrsinaAchievements import *
 
 app = Ursina(development_mode=False ,show_ursina_splash=True)
-Audio('theme.mp3',loop=True)
+Audio('Assets/theme.mp3',loop=True)
 do = False
 def cond():
     global do
@@ -17,13 +17,13 @@ def setdo():
 invoke(setdo, delay = 3)
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
-poke=Entity(model='poke',shader=shader,y=1.2,z=-10,collider='box')
+poke=Entity(model='Assets/poke',shader=shader,y=1.2,z=-10,collider='box')
 poker=Entity(parent=poke)
 start_point=poke.position
 road=Entity(shader=shader)
 current_level=0
 for z in range(3):
-    Entity(model='road',shader=shader,z=z*19.024458,parent=road,color=color.white)
+    Entity(model='Assets/road',shader=shader,z=z*19.024458,parent=road,color=color.white)
 road.combine()
 
 Sky(texture='sky_sunset')
@@ -45,6 +45,8 @@ def lerp_angle(start_angle, end_angle, t):
 def update():
     global moving, current_level
     moving=False
+    if current_level<0:
+        create_achievement(name = 'You discovered a bug :O', condition = cond, icon = 'confetti', sound = 'sudden', duration = 1.5,description="Bug on purpose lol")
     if held_keys['w'] and not moving and not stop:
         poke.rotation_y=lerp_angle(poke.rotation_y,0,time.dt*10)
         moving=True
@@ -69,7 +71,7 @@ def update():
 
 class Car(Entity):
     def __init__(self, level=0,add_to_scene_entities=True, **kwargs):
-        super().__init__(add_to_scene_entities, model='Camaro',scale=2,y=.5,shader=lit_with_shadows_shader,**kwargs)
+        super().__init__(add_to_scene_entities, model='Assets/Camaro',scale=2,y=.5,shader=lit_with_shadows_shader,**kwargs)
         self.level=level
         self.choice=randint(0,1)
         self.collider='box'
