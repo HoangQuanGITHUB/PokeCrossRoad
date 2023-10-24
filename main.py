@@ -4,7 +4,7 @@ from direct.filter.CommonFilters import CommonFilters
 from random import randint
 
 app = Ursina(development_mode=False ,show_ursina_splash=True)
-Audio('Assets/theme.mp3',loop=True)
+Audio('Assets/theme.wav',loop=True)
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
 poke=Entity(model='Assets/poke',shader=shader,y=1.2,z=-10,collider='box')
