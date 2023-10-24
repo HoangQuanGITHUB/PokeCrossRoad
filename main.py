@@ -2,23 +2,12 @@ from ursina import *
 from ursina.shaders import *
 from direct.filter.CommonFilters import CommonFilters
 from random import randint
-from UrsinaAchievements import *
 
 app = Ursina(development_mode=False ,show_ursina_splash=True)
 Audio('Assets/theme.mp3',loop=True)
-do = False
-def cond():
-    global do
-    return do
-create_achievement(name = 'Welcome!', condition = cond, icon = 'confetti', sound = 'sudden', duration = 1.5,description="Welcome to the game!")
-def setdo():
-    global do
-    do = True
-invoke(setdo, delay = 3)
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
 poke=Entity(model='Assets/poke',shader=shader,y=1.2,z=-10,collider='box')
-poker=Entity(parent=poke)
 start_point=poke.position
 road=Entity(shader=shader)
 current_level=0
@@ -45,8 +34,6 @@ def lerp_angle(start_angle, end_angle, t):
 def update():
     global moving, current_level
     moving=False
-    if current_level<0:
-        create_achievement(name = 'You discovered a bug :O', condition = cond, icon = 'confetti', sound = 'sudden', duration = 1.5,description="Bug on purpose lol")
     if held_keys['w'] and not moving and not stop:
         poke.rotation_y=lerp_angle(poke.rotation_y,0,time.dt*10)
         moving=True
@@ -92,7 +79,8 @@ class Car(Entity):
         if self.level!=current_level:
             destroy(self)
         if self.intersects(poke):
-            exit()
+            poke.z=-10
+            poke.x=0
 class Setting(Entity):
     def __init__(self, **kwargs):
         super().__init__(model='quad',parent=camera.ui,**kwargs)
