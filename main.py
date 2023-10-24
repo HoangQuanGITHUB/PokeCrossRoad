@@ -46,20 +46,26 @@ def update():
     if held_keys['d'] and not moving and not stop:
         poke.rotation_y=lerp_angle(poke.rotation_y,90,time.dt*10)
         moving=True
-    if moving and (poke.x > -15.3379 and poke.x < 22.9091):
-        poke.position+=poke.forward*time.dt*6
+    if moving and (poke.x > -15.3379 and poke.x < 22.9091 and poke.z>-11):
+        poke.position+=poke.forward*time.dt*7
     elif poke.x<=-15.3379:
         poke.x+=time.dt
     elif poke.x>=22.9091:
         poke.x-=time.dt
-    road.z=floor((poke.z-start_point.z)/19.024458)*19.024458
+    elif poke.z<-11:
+        poke.z+=time.dt
     current_level=floor((poke.z-start_point.z)/19.024458)
+    if current_level>=0:
+        road.z=floor((poke.z-start_point.z)/19.024458)*19.024458
+    else:
+        current_level=0
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
 
 class Car(Entity):
     def __init__(self, level=0,add_to_scene_entities=True, **kwargs):
         super().__init__(add_to_scene_entities, model='Assets/Camaro',scale=2,y=.5,shader=lit_with_shadows_shader,**kwargs)
         self.level=level
+        self.headlights=Entity(model='Assets/headlight',parent=self,color=color.rgba(252, 255, 102,200),scale=.5)
         self.choice=randint(0,1)
         self.collider='box'
         if self.choice>0:
@@ -73,7 +79,8 @@ class Car(Entity):
         self.speed=5
         self.color=color.random_color()
     def update(self):
-        self.position+=self.forward*self.speed*time.dt
+        if not stop:
+            self.position+=self.forward*self.speed*time.dt
         if self.x < -30 or self.x > 30:
             destroy(self)
         if self.level!=current_level:
@@ -121,7 +128,8 @@ class TaskManager(Entity):
         super().__init__(add_to_scene_entities, **kwargs)
     def update(self):
         score.text=f'{current_level}'
-    @every((current_level+1)*1)
+        pivot.position=poke.position
+    @every((current_level+1)*(1+current_level/100))
     def onesec(self):
         exec(f'Car({current_level})')
 TaskManager()
