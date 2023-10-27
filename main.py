@@ -14,7 +14,6 @@ current_level=0
 for z in range(3):
     Entity(model='Assets/road',shader=shader,z=z*19.024458,parent=road,color=color.white)
 road.combine()
-
 Sky(texture='sky_sunset')
 filter.setCartoonInk(2)
 camera_pivot=Entity()
@@ -147,6 +146,6 @@ def input(key):
 pivot=Entity()
 
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
-light.shadow_map_resolution = (1024,1024)
+light.shadow_map_resolution = (2048,2048)
 
 app.run()
