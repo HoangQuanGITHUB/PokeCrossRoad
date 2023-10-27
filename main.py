@@ -34,16 +34,16 @@ def lerp_angle(start_angle, end_angle, t):
 def update():
     global moving, current_level
     moving=False
-    if held_keys['w'] and not moving and not stop:
+    if held_keys['w'] and not moving:
         poke.rotation_y=lerp_angle(poke.rotation_y,0,time.dt*10)
         moving=True
-    if held_keys['s'] and not moving and not stop:
+    if held_keys['s'] and not moving:
         poke.rotation_y=lerp_angle(poke.rotation_y,180,time.dt*10)
         moving=True
-    if held_keys['a'] and not moving and not stop:
+    if held_keys['a'] and not moving:
         poke.rotation_y=lerp_angle(poke.rotation_y,-90,time.dt*10)
         moving=True
-    if held_keys['d'] and not moving and not stop:
+    if held_keys['d'] and not moving:
         poke.rotation_y=lerp_angle(poke.rotation_y,90,time.dt*10)
         moving=True
     if moving and (poke.x > -15.3379 and poke.x < 22.9091 and poke.z>-11):
@@ -76,11 +76,10 @@ class Car(Entity):
             self.rotation_y=-90
             self.z=3+(current_level)*19.024458
             self.x=20
-        self.speed=5
+        self.speed=5+(current_level/10)
         self.color=color.random_color()
     def update(self):
-        if not stop:
-            self.position+=self.forward*self.speed*time.dt
+        self.position+=self.forward*self.speed*time.dt
         if self.x < -30 or self.x > 30:
             destroy(self)
         if self.level!=current_level:
@@ -136,15 +135,12 @@ TaskManager()
 score=Text(text=f'{current_level}',y=.5,scale=3)
 settings=Setting()
 settings.disable()
-stop=False
 def toggleSetting():
-    global settings, stop
+    global settings
     if settings.enabled:
         settings.disable()
-        stop=False
     else:
         settings.enable()
-        stop=True
 def input(key):
     if key=='q':
         toggleSetting()
