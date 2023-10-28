@@ -1,4 +1,5 @@
 from ursina import *
+from ursina.networking import *
 from ursina.shaders import *
 from direct.filter.CommonFilters import CommonFilters
 from random import randint
@@ -7,11 +8,39 @@ app = Ursina(development_mode=False ,show_ursina_splash=True)
 Audio('Assets/theme.wav',loop=True)
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
+
+playerdata=[]
+
+peer = RPCPeer()
+
+# @rpc(peer)
+# def message(connection, time_received, msg: str):
+#     message = Text(text=f"Received: {msg}", origin=(0, 0), y=-0.05-len(messages)*0.05)
+#     messages.append(message)
+#     s = Sequence(1, Func(message.fade_out, duration=0.5), 0.5, Func(destroy, message), Func(messages.pop, 0))
+#     s.start()
+
+class Menu(Entity):
+    def __init__(self, add_to_scene_entities=True, **kwargs):
+        super().__init__(add_to_scene_entities,**kwargs)
+        application.time_scale=0
+        self.parent=camera.ui
+        self.title=Entity(parent=self,model='quad',texture='title',y=.2,scale=1)
+        self.sp=Button(text='Singleplayer',scale=(.5,0.25),color=color.white,parent=self)
+        self.sp.text_entity.color=color.black
+        self.sp.on_click=self.startsp
+        self.mp=Button(text='Multiplayer (EXPERIMENT)',scale=(.5,0.25),color=color.white,y=-.3,parent=self)
+        self.mp.text_entity.color=color.black
+        self.mp.on_click=lambda:print_on_screen('No, it is not available yet...')
+    def startsp(self):
+        application.time_scale=1
+        destroy(self)
+invoke(lambda:Menu(),delay=5)
 poke=Entity(model='Assets/poke',shader=shader,y=1.2,z=-10,collider='box')
 start_point=poke.position
 road=Entity(shader=shader)
 current_level=0
-for z in range(3):
+for z in range(-1,4):
     Entity(model='Assets/road',shader=shader,z=z*19.024458,parent=road,color=color.white)
 road.combine()
 Sky(texture='sky_sunset')
@@ -74,7 +103,7 @@ class Car(Entity):
         else:
             self.rotation_y=-90
             self.z=3+(current_level)*19.024458
-            self.x=20
+            self.x=30
         self.speed=5+(current_level/10)
         self.color=color.random_color()
     def update(self):

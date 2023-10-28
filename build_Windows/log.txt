@@ -1,0 +1,27 @@
+:prc(warning): Invalid integer value for ConfigVariable win-size: 1080.0
+:prc(warning): Invalid integer value for ConfigVariable win-size: 1920.0
+Known pipe types:
+  wglGraphicsPipe
+(3 aux display modules not yet loaded.)
+:prc(warning): changing default value for ConfigVariable paste-emit-keystrokes from '1' to '0'.
+:pnmimage:png(warning): iCCP: known incorrect sRGB profile
+:loader(error): Unable to open src/models_compressed/Assets/poke.bam
+:loader(error): Unable to open src/models_compressed/Assets/road.bam
+:pnmimage:png(warning): iCCP: known incorrect sRGB profile
+:loader(error): Unable to open src/models_compressed/Assets/Camaro.bam
+:loader(error): Unable to open src/models_compressed/Assets/headlight.bam
+:display:windisplay(warning): Could not find icon filename textures/ursina.ico
+set window position: Vec2(0, 0)
+package_folder: D:\ICLab\PokeCrossRoad\build_Windows\python\lib\site-packages\ursina
+asset_folder: src
+read obj at: src\Assets\poke.obj
+saved .bam to: src\models_compressed\Assets\poke.bam
+read obj at: src\Assets\road.obj
+saved .bam to: src\models_compressed\Assets\road.bam
+os: Windows
+development mode: False
+application successfully started
+read obj at: src\Assets\Camaro.obj
+saved .bam to: src\models_compressed\Assets\Camaro.bam
+read obj at: src\Assets\headlight.obj
+saved .bam to: src\models_compressed\Assets\headlight.bam
