@@ -9,16 +9,18 @@ Audio('Assets/theme.wav',loop=True)
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
 
-playerdata=[]
-
+playerdata={}
+mp=False
 peer = RPCPeer()
-
-# @rpc(peer)
-# def message(connection, time_received, msg: str):
-#     message = Text(text=f"Received: {msg}", origin=(0, 0), y=-0.05-len(messages)*0.05)
-#     messages.append(message)
-#     s = Sequence(1, Func(message.fade_out, duration=0.5), 0.5, Func(destroy, message), Func(messages.pop, 0))
-#     s.start()
+@rpc(peer)
+def message(connection, time_received, msg: str):
+    pass
+@rpc(peer)
+def on_connect(connection, time_connected):
+	print(f"{connection} joined the room!")
+@rpc(peer)
+def on_disconnect(connection, time_disconnected):
+	print(f"{connection} left the room!")
 
 class Menu(Entity):
     def __init__(self, add_to_scene_entities=True, **kwargs):
@@ -29,10 +31,14 @@ class Menu(Entity):
         self.sp=Button(text='Singleplayer',scale=(.5,0.25),color=color.white,parent=self)
         self.sp.text_entity.color=color.black
         self.sp.on_click=self.startsp
-        self.mp=Button(text='Multiplayer (EXPERIMENT)',scale=(.5,0.25),color=color.white,y=-.3,parent=self)
+        self.mp=Button(text='Multiplayer (Not available)',scale=(.5,0.25),color=color.white,y=-.3,parent=self)
         self.mp.text_entity.color=color.black
-        self.mp.on_click=lambda:print_on_screen('No, it is not available yet...')
     def startsp(self):
+        application.time_scale=1
+        destroy(self)
+    def startmp(self):
+        global mp
+        mp=True
         application.time_scale=1
         destroy(self)
 invoke(lambda:Menu(),delay=5)
@@ -154,6 +160,9 @@ class TaskManager(Entity):
     def __init__(self, add_to_scene_entities=True, **kwargs):
         super().__init__(add_to_scene_entities, **kwargs)
     def update(self):
+        
+        peer.update()
+
         score.text=f'{current_level}'
         pivot.position=poke.position
     @every((current_level+1)*(1+current_level/100))
@@ -172,6 +181,9 @@ def toggleSetting():
 def input(key):
     if key=='q':
         toggleSetting()
+    if key=='e':
+        for i in peer.get_connections():
+            print(i)
 pivot=Entity()
 
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))

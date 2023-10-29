@@ -7,14 +7,20 @@ start_text = "Press H to host or C to connect."
 status_text = Text(text=start_text, origin=(0, 0))
 messages = []
 
+# Networking stuff
 peer = RPCPeer()
-
 @rpc(peer)
 def message(connection, time_received, msg: str):
     message = Text(text=f"Received: {msg}", origin=(0, 0), y=-0.05-len(messages)*0.05)
     messages.append(message)
     s = Sequence(1, Func(message.fade_out, duration=0.5), 0.5, Func(destroy, message), Func(messages.pop, 0))
     s.start()
+@rpc(peer)
+def on_connect(connection, time_connected):
+	print(f"{connection} joined the chat.")
+@rpc(peer)
+def on_disconnect(connection, time_disconnected):
+	print(f"{connection} left the chat.")
 
 def update():
     peer.update()
