@@ -4,7 +4,7 @@ from ursina.shaders import *
 from direct.filter.CommonFilters import CommonFilters
 from random import randint
 
-app = Ursina(development_mode=False ,show_ursina_splash=True)
+app = Ursina(development_mode=False)
 Audio('Assets/theme.wav',loop=True)
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
@@ -17,10 +17,10 @@ def message(connection, time_received, msg: str):
     pass
 @rpc(peer)
 def on_connect(connection, time_connected):
-	print(f"{connection} joined the room!")
+	print_on_screen(f"{connection.address} joined the room!")
 @rpc(peer)
 def on_disconnect(connection, time_disconnected):
-	print(f"{connection} left the room!")
+	print_on_screen(f"{connection.address} left the room!")
 
 class Menu(Entity):
     def __init__(self, add_to_scene_entities=True, **kwargs):
@@ -41,7 +41,7 @@ class Menu(Entity):
         mp=True
         application.time_scale=1
         destroy(self)
-invoke(lambda:Menu(),delay=5)
+invoke(lambda:Menu(),delay=3)
 poke=Entity(model='Assets/poke',shader=shader,y=1.2,z=-10,collider='box')
 start_point=poke.position
 road=Entity(shader=shader)
@@ -57,16 +57,11 @@ camera.position=(0,1,-30)
 camera_pivot.rotation_y=-30 
 camera_pivot.rotation_x=20
 moving=False
-def lerp_angle(start_angle, end_angle, t):
-    start_angle = start_angle % 360
-    end_angle = end_angle % 360
-    angle_diff = (end_angle - start_angle + 180) % 360 - 180
-    result_angle = start_angle + t * angle_diff
-    result_angle = (result_angle + 360) % 360
-    return result_angle
 
 def update():
     global moving, current_level
+    if mp:
+        peer.update()
     moving=False
     if held_keys['w'] and not moving:
         poke.rotation_y=lerp_angle(poke.rotation_y,0,time.dt*10)
@@ -94,6 +89,9 @@ def update():
     else:
         current_level=0
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
+def restart_light():
+    render.clearLight(light._light_np)
+    render.setLight(light._light_np)
 
 class Car(Entity):
     def __init__(self, level=0,add_to_scene_entities=True, **kwargs):
@@ -132,8 +130,10 @@ class Setting(Entity):
         self.bloomsetting.on_value_changed=self.changebloom
         self.togglelight=Slider(text='Lights',min=0,max=1,step=1,parent=self,scale=(1,2),x=-.4,y=0,default=1)
         self.togglelight.on_value_changed=self.toggleLight
-        self.changegamma=Slider(text='Adjust Gamma',min=0,max=1,parent=self,scale=(1,2),x=-.3,y=-.2,dynamic=True,default=1)
+        self.changegamma=Slider(text='Gamma',min=0,max=1,parent=self,scale=(1,2),x=-.375,y=-.2,dynamic=True,default=1)
         self.changegamma.on_value_changed=self.changeGamma
+        self.smreschange=Slider(text='Shadow map resolution',min=0,max=4096,parent=self,scale=(1,2),x=-.19,y=-.4,default=2048,step=512)
+        self.smreschange.on_value_changed=self.shadow_map_change
     def changeMSAA(self):
         filter.delMSAA()
         filter.setMSAA(self.MSAAsetting.value)
@@ -151,6 +151,9 @@ class Setting(Entity):
         else:
             self.togglelight.knob.text_entity.text='Off'
             render.clearLight(light._light_np)
+    def shadow_map_change(self):
+        light.shadow_map_resolution=(self.smreschange.value,self.smreschange.value)
+        restart_light()
     def update(self):
         if self.togglelight.value>0:
             self.togglelight.knob.text_entity.text='On'
@@ -185,7 +188,6 @@ def input(key):
         for i in peer.get_connections():
             print(i)
 pivot=Entity()
-
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
 light.shadow_map_resolution = (2048,2048)
 
