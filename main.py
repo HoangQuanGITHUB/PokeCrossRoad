@@ -189,6 +189,7 @@ def input(key):
             print(i)
 pivot=Entity()
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
+light._light_np=light.attachNewNode(light._light)
 light.shadow_map_resolution = (2048,2048)
 
 app.run()
