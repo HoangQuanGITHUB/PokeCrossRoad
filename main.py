@@ -8,7 +8,6 @@ app = Ursina(development_mode=False)
 Audio('Assets/theme.wav',loop=True)
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
-
 playerdata={}
 mp=False
 peer = RPCPeer()
@@ -31,7 +30,7 @@ class Menu(Entity):
         self.sp=Button(text='Singleplayer',scale=(.5,0.25),color=color.white,parent=self)
         self.sp.text_entity.color=color.black
         self.sp.on_click=self.startsp
-        self.mp=Button(text='Multiplayer (Not available)',scale=(.5,0.25),color=color.white,y=-.3,parent=self)
+        self.mp=Button(text='Multiplayer (Not available yet)',scale=(.5,0.25),color=color.white,y=-.3,parent=self)
         self.mp.text_entity.color=color.black
     def startsp(self):
         application.time_scale=1
@@ -41,7 +40,7 @@ class Menu(Entity):
         mp=True
         application.time_scale=1
         destroy(self)
-invoke(lambda:Menu(),delay=3)
+invoke(lambda:Menu(),delay=1.5)
 poke=Entity(model='Assets/poke',shader=shader,y=1.2,z=-10,collider='box')
 start_point=poke.position
 road=Entity(shader=shader)
@@ -50,12 +49,12 @@ for z in range(-1,4):
     Entity(model='Assets/road',shader=shader,z=z*19.024458,parent=road,color=color.white)
 road.combine()
 Sky(texture='sky_sunset')
-filter.setCartoonInk(2)
+filter.setCartoonInk(1.5)
 camera_pivot=Entity()
 camera.parent=camera_pivot
-camera.position=(0,1,-30)
-camera_pivot.rotation_y=-30 
-camera_pivot.rotation_x=20
+camera.position=(18, 20, -23)
+camera.rotation_y=-37.5
+camera.rotation_x=32.963
 moving=False
 
 def update():
@@ -95,22 +94,21 @@ def restart_light():
 
 class Car(Entity):
     def __init__(self, level=0,add_to_scene_entities=True, **kwargs):
-        super().__init__(add_to_scene_entities, model='Assets/Camaro',scale=2,y=.5,shader=lit_with_shadows_shader,**kwargs)
+        super().__init__(add_to_scene_entities, model='Assets/car',shader=shader,**kwargs)
         self.level=level
-        self.headlights=Entity(model='Assets/headlight',parent=self,color=color.rgba(252, 255, 102,200),scale=.5)
         self.choice=randint(0,1)
         self.collider='box'
         if self.choice>0:
             self.rotation_y=90
             self.z=-3+(current_level)*19.024458
-            self.x=-20
+            self.x=-30
         else:
             self.rotation_y=-90
             self.z=3+(current_level)*19.024458
             self.x=30
-        self.speed=5+(current_level/10)
-        self.color=color.random_color()
+        self.speed=(5+(current_level/10))*(current_level+2)*(1+current_level/10)
     def update(self):
+        global current_level
         self.position+=self.forward*self.speed*time.dt
         if self.x < -30 or self.x > 30:
             destroy(self)
@@ -119,6 +117,7 @@ class Car(Entity):
         if self.intersects(poke):
             poke.z=-10
             poke.x=0
+            current_level=0
 class Setting(Entity):
     def __init__(self, **kwargs):
         super().__init__(model='quad',parent=camera.ui,**kwargs)
@@ -132,7 +131,7 @@ class Setting(Entity):
         self.togglelight.on_value_changed=self.toggleLight
         self.changegamma=Slider(text='Gamma',min=0,max=1,parent=self,scale=(1,2),x=-.375,y=-.2,dynamic=True,default=1)
         self.changegamma.on_value_changed=self.changeGamma
-        self.smreschange=Slider(text='Shadow map resolution',min=0,max=4096,parent=self,scale=(1,2),x=-.19,y=-.4,default=2048,step=512)
+        self.smreschange=Slider(text='Shadow map resolution',min=0,max=4096,parent=self,scale=(1,2),x=-.19,y=-.4,default=1024,step=512)
         self.smreschange.on_value_changed=self.shadow_map_change
     def changeMSAA(self):
         filter.delMSAA()
@@ -168,7 +167,7 @@ class TaskManager(Entity):
 
         score.text=f'{current_level}'
         pivot.position=poke.position
-    @every((current_level+1)*(1+current_level/100))
+    @every((current_level+1)*(1+current_level/10))
     def onesec(self):
         exec(f'Car({current_level})')
 TaskManager()
@@ -184,12 +183,9 @@ def toggleSetting():
 def input(key):
     if key=='q':
         toggleSetting()
-    if key=='e':
-        for i in peer.get_connections():
-            print(i)
+
 pivot=Entity()
-light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, 90, 45))
+light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, -45, 45))
 light._light_np=light.attachNewNode(light._light)
-light.shadow_map_resolution = (2048,2048)
 
 app.run()
