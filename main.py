@@ -45,10 +45,10 @@ poke=Entity(model='Assets/poke',shader=shader,y=1.2,z=-10,collider='box')
 start_point=poke.position
 road=Entity(shader=shader)
 current_level=0
+old_level=0
 for z in range(-1,4):
     Entity(model='Assets/road',shader=shader,z=z*19.024458,parent=road,color=color.white)
 road.combine()
-Sky(texture='sky_sunset')
 filter.setCartoonInk(1.5)
 camera_pivot=Entity()
 camera.parent=camera_pivot
@@ -58,7 +58,7 @@ camera.rotation_x=32.963
 moving=False
 
 def update():
-    global moving, current_level
+    global moving, current_level, old_level
     if mp:
         peer.update()
     moving=False
@@ -75,19 +75,22 @@ def update():
         poke.rotation_y=lerp_angle(poke.rotation_y,90,time.dt*10)
         moving=True
     if moving and (poke.x > -15.3379 and poke.x < 22.9091 and poke.z>-11):
-        poke.position+=poke.forward*time.dt*(7*(1+current_level/10))
+        poke.position+=poke.forward*time.dt*(7*(1+current_level/100))
     elif poke.x<=-15.3379:
         poke.x+=time.dt
     elif poke.x>=22.9091:
         poke.x-=time.dt
     elif poke.z<-11:
         poke.z+=time.dt
+    if old_level != current_level:
+        exec(f'Car({current_level})')
     current_level=floor((poke.z-start_point.z)/19.024458)
     if current_level>=0:
         road.z=floor((poke.z-start_point.z)/19.024458)*19.024458
     else:
         current_level=0
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
+    old_level=current_level
 def restart_light():
     render.clearLight(light._light_np)
     render.setLight(light._light_np)
@@ -106,7 +109,7 @@ class Car(Entity):
             self.rotation_y=-90
             self.z=3+(current_level)*19.024458
             self.x=30
-        self.speed=(5+(current_level/10))*(current_level+2)*(1+current_level/10)
+        self.speed=(10+(current_level/10))*(1+current_level/10)
     def update(self):
         global current_level
         self.position+=self.forward*self.speed*time.dt
@@ -167,8 +170,8 @@ class TaskManager(Entity):
 
         score.text=f'{current_level}'
         pivot.position=poke.position
-    @every((current_level+1)*(1/(current_level+1)))
-    def onesec(self):
+    @every(1/(current_level+1))
+    def cars(self):
         exec(f'Car({current_level})')
 TaskManager()
 score=Text(text=f'{current_level}',y=.5,scale=3)
@@ -187,5 +190,7 @@ def input(key):
 pivot=Entity()
 light=DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, -45, 45))
 light._light_np=light.attachNewNode(light._light)
+
+Sky(texture='sky_sunset')
 
 app.run()
