@@ -1,11 +1,30 @@
-Traceback (most recent call last):
-  File "D:\PokeCrossRoad\main.py", line 2, in <module>
-    from ursina.networking import *
-  File "D:\PokeCrossRoad\build_Windows\python\lib\site-packages\ursina\networking.py", line 34, in <module>
-    import asyncio
-  File "D:\PokeCrossRoad\build_Windows\python\lib\site-packages\asyncio\__init__.py", line 21, in <module>
-    from .base_events import *
-  File "D:\PokeCrossRoad\build_Windows\python\lib\site-packages\asyncio\base_events.py", line 296
-    future = tasks.async(future, loop=self)
-                   ^^^^^
-SyntaxError: invalid syntax
+:prc(warning): Invalid integer value for ConfigVariable win-size: 1080.0
+:prc(warning): Invalid integer value for ConfigVariable win-size: 1920.0
+Known pipe types:
+  wglGraphicsPipe
+(3 aux display modules not yet loaded.)
+:prc(warning): changing default value for ConfigVariable paste-emit-keystrokes from '1' to '0'.
+:pnmimage:png(warning): iCCP: known incorrect sRGB profile
+:loader(error): Unable to open src/models_compressed/Assets/poke.bam
+:loader(error): Unable to open src/models_compressed/Assets/road.bam
+:loader(error): Unable to open src/models_compressed/Assets/car.bam
+:display:windisplay(warning): Could not find icon filename textures/ursina.ico
+:linmath(warning): Tried to invert singular LMatrix4.
+:linmath(warning): Tried to invert singular LMatrix4.
+set window position: Vec2(0, 0)
+package_folder: D:\PokeCrossRoad\build_Windows\python\lib\site-packages\ursina
+asset_folder: src
+read obj at: src\Assets\poke.obj
+saved .bam to: src\models_compressed\Assets\poke.bam
+read obj at: src\Assets\road.obj
+saved .bam to: src\models_compressed\Assets\road.bam
+read obj at: src\Assets\road.obj
+read obj at: src\Assets\road.obj
+read obj at: src\Assets\road.obj
+read obj at: src\Assets\road.obj
+append to animations: task_manager
+os: Windows
+development mode: False
+application successfully started
+read obj at: src\Assets\car.obj
+saved .bam to: src\models_compressed\Assets\car.bam
