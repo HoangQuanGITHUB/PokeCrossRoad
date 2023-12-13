@@ -75,7 +75,7 @@ def update():
         poke.rotation_y=lerp_angle(poke.rotation_y,90,time.dt*10)
         moving=True
     if moving and (poke.x > -15.3379 and poke.x < 22.9091 and poke.z>-11):
-        poke.position+=poke.forward*time.dt*7
+        poke.position+=poke.forward*time.dt*(7*(1+current_level/10))
     elif poke.x<=-15.3379:
         poke.x+=time.dt
     elif poke.x>=22.9091:
@@ -167,7 +167,7 @@ class TaskManager(Entity):
 
         score.text=f'{current_level}'
         pivot.position=poke.position
-    @every((current_level+1)*(1+current_level/10))
+    @every((current_level+1)*(1/(current_level+1)))
     def onesec(self):
         exec(f'Car({current_level})')
 TaskManager()
