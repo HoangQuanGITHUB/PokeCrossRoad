@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "D:\PokeCrossRoad\main.py", line 2, in <module>
+    from ursina.networking import *
+  File "D:\PokeCrossRoad\build_Windows\python\lib\site-packages\ursina\networking.py", line 34, in <module>
+    import asyncio
+  File "D:\PokeCrossRoad\build_Windows\python\lib\site-packages\asyncio\__init__.py", line 21, in <module>
+    from .base_events import *
+  File "D:\PokeCrossRoad\build_Windows\python\lib\site-packages\asyncio\base_events.py", line 296
+    future = tasks.async(future, loop=self)
+                   ^^^^^
+SyntaxError: invalid syntax

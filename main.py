@@ -1,5 +1,4 @@
 from ursina import *
-from ursina.networking import *
 from ursina.shaders import *
 from direct.filter.CommonFilters import CommonFilters
 from random import randint
@@ -8,18 +7,6 @@ app = Ursina(development_mode=False)
 Audio('Assets/theme.wav',loop=True)
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
-playerdata={}
-mp=False
-peer = RPCPeer()
-@rpc(peer)
-def message(connection, time_received, msg: str):
-    pass
-@rpc(peer)
-def on_connect(connection, time_connected):
-	print_on_screen(f"{connection.address} joined the room!")
-@rpc(peer)
-def on_disconnect(connection, time_disconnected):
-	print_on_screen(f"{connection.address} left the room!")
 
 class Menu(Entity):
     def __init__(self, add_to_scene_entities=True, **kwargs):
@@ -59,8 +46,6 @@ moving=False
 
 def update():
     global moving, current_level, old_level
-    if mp:
-        peer.update()
     moving=False
     if held_keys['w'] and not moving:
         poke.rotation_y=lerp_angle(poke.rotation_y,0,time.dt*10)
@@ -165,9 +150,6 @@ class TaskManager(Entity):
     def __init__(self, add_to_scene_entities=True, **kwargs):
         super().__init__(add_to_scene_entities, **kwargs)
     def update(self):
-        
-        peer.update()
-
         score.text=f'{current_level}'
         pivot.position=poke.position
     @every(1/(current_level+1))
