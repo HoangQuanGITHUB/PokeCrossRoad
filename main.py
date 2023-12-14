@@ -32,7 +32,6 @@ poke=Entity(model='Assets/poke',shader=shader,y=1.2,z=-10,collider='box')
 start_point=poke.position
 road=Entity(shader=shader)
 current_level=0
-old_level=0
 for z in range(-1,4):
     Entity(model='Assets/road',shader=shader,z=z*19.024458,parent=road,color=color.white)
 road.combine()
@@ -45,7 +44,7 @@ camera.rotation_x=32.963
 moving=False
 
 def update():
-    global moving, current_level, old_level
+    global moving, current_level
     moving=False
     if held_keys['w'] and not moving:
         poke.rotation_y=lerp_angle(poke.rotation_y,0,time.dt*10)
@@ -67,15 +66,12 @@ def update():
         poke.x-=time.dt
     elif poke.z<-11:
         poke.z+=time.dt
-    if old_level != current_level:
-        exec(f'Car({current_level})')
-    current_level=floor((poke.z-start_point.z)/19.024458)
     if current_level>=0:
-        road.z=floor((poke.z-start_point.z)/19.024458)*19.024458
+        road.z=current_level*19.024458
     else:
         current_level=0
+    current_level=floor((poke.z-start_point.z)/19.024458)
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
-    old_level=current_level
 def restart_light():
     render.clearLight(light._light_np)
     render.setLight(light._light_np)
@@ -152,7 +148,7 @@ class TaskManager(Entity):
     def update(self):
         score.text=f'{current_level}'
         pivot.position=poke.position
-    @every(1/(current_level+1))
+    @every(.75/(current_level+1))
     def cars(self):
         exec(f'Car({current_level})')
 TaskManager()
