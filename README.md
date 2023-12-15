@@ -12,4 +12,5 @@ AI. AI will be available to race with, something else that I can't tell.
 
 # Downloads
 The game hasn't officially came out yet but you can try the demo on itch.io! It is free!
-https://mcideveloper.itch.io/poke-cross-the-road
+https://mcideveloper.itch.io/poke-cross-road
+![Screenshot (25)](https://github.com/HoangQuanGITHUB/PokeCrossRoad/assets/103574748/7b577f5d-4533-421a-8c95-5feae3669643)
