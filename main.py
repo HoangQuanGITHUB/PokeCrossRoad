@@ -1,10 +1,11 @@
 from ursina import *
 from ursina.shaders import *
 from direct.filter.CommonFilters import CommonFilters
-from random import randint
+from random import randint, choice
 
 app = Ursina(development_mode=False)
-Audio('Assets/theme.wav',loop=True)
+theme=Audio(choice(os.listdir("Assets/Themes")))
+theme
 shader=lit_with_shadows_shader
 filter=CommonFilters(app.win,app.cam)
 
@@ -66,11 +67,11 @@ def update():
         poke.x-=time.dt
     elif poke.z<-11:
         poke.z+=time.dt
+    current_level=floor((poke.z-start_point.z)/19.024458)
     if current_level>=0:
         road.z=current_level*19.024458
     else:
         current_level=0
-    current_level=floor((poke.z-start_point.z)/19.024458)
     camera_pivot.position=lerp(camera_pivot.position,poke.position,time.dt*5)
 def restart_light():
     render.clearLight(light._light_np)
@@ -145,9 +146,15 @@ class Setting(Entity):
 class TaskManager(Entity):
     def __init__(self, add_to_scene_entities=True, **kwargs):
         super().__init__(add_to_scene_entities, **kwargs)
+        theme.end=self.thememanager
     def update(self):
         score.text=f'{current_level}'
         pivot.position=poke.position
+
+    def thememanager(self):
+        global theme
+        theme=Audio(choice(os.listdir("Assets/Themes")))
+    
     @every(.75/(current_level+1))
     def cars(self):
         exec(f'Car({current_level})')
